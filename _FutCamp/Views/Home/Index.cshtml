@@ -1,0 +1,331 @@
+﻿@{
+    ViewBag.Title = "Tabela Brasileirão";
+}
+<div class="container">
+    <script>
+
+
+
+        var saveDataRequest = '';
+
+        $(document).ready(function () {
+            PageLoad();
+        });
+
+        async function PageLoad() {
+
+            LoadEventsOnComponents();
+            LoadSelectsTeams();
+            LoadTableChampionship();
+        }
+
+       
+
+        function ConvertDataToSelectOptions(itens) {
+            let convertedItens = itens.map(function (item) {
+
+                return `<option value="${item.id}">${item.name}</option>`;
+            });
+
+            return convertedItens;
+        }
+        //Carregar times para confrontos diretos
+        async function LoadSelectsTeams() {
+            let teamsChampionship = await GetTeams();
+            /*let teamsSelectOptions = ConvertDataToSelectOptions(teamsChampionship);*/
+
+            LoadSelectOptions('selectHost', teamsChampionship);
+            LoadSelectOptions('selectforeign', teamsChampionship);
+        }
+
+        function LoadSelectOptions(selectId, itens) {
+            $(`#${selectId} > option`).remove();
+            $(`#${selectId}`).append(itens);
+        }
+
+         function LoadEventsOnComponents() {
+            $('#buttonSaveModal').click(async function () {
+
+                if (ValidateFormData()) {
+                await SaveMatchResult();
+
+
+
+                }
+            })
+
+            $('#modalInsertNewMatchResult').on('hidden.bs.modal', function () {
+                ClearFormData();
+            });
+        }
+        //salvar valores inputados na controller.
+        function SaveDataModal() {
+
+            let data = {
+                selectedHost: $('#selectedHost').val(),
+                selectForeign: $('#selectforeign').val(),
+                textForeignGoals: $('#textForeignGoals').val(),
+                textHostGoals: $('#textHostGoals').val()
+            };
+
+            return DoPost(saveDataRequest, data);
+        }
+
+        function DoPost(url, data) {
+
+        }
+
+        function DoGet(url, data) {
+
+        }
+        //metodo de validação das informações inseridas.
+        function ValidateFormData(data) {
+
+            let selectedHost = $('#selecthost').val();
+            let selectedForeign = $('#selectforeign').val();
+            let messagesErro = [];
+            let foreignGoals = $('#textForeignGoals').val();
+            let hostGoals = $('#textHostGoals').val();
+
+            if (selectedHost == selectedForeign)
+                messagesErro.push("-Os times devem ser diferentes entre si.");
+
+            if (foreignGoals == '')
+                messagesErro.push("-Informe os gols do time de casa.");
+
+            if (hostGoals == '')
+                messagesErro.push("-Informe os gols do time visitante.");
+
+            if (messagesErro.length > 0) {
+
+                alert(`Atenção: \n\r${messagesErro.join('\n\r-')}`);
+            }
+
+            return messagesErro.length == 0;
+
+        }
+
+        function ClearFormData() {
+
+            $('input').val('');
+        }
+
+        async function LoadTableChampionship() {
+
+            let dataChampionship = await GetDataChampionship();
+
+            LoadTable(dataChampionship);
+        }
+
+        function LoadTable(data) {
+
+            if (data != null) {
+
+                ClearTable();
+
+                $(data).sort(SortByProprierties).each(function (index, item) {
+
+                    let columns = CreateColunsToTable(item, index + 1);
+                    let row = `<tr><td>${columns.join('</td><td>')}</td></tr>`;
+
+                    $('#tableTabelaBRasileirao > tbody').append(row);
+                });
+            }
+        }
+        //função de popular meu dt.
+        function CreateColunsToTable(data, position) {
+
+            let columns = [];
+
+            columns.push(position)
+            columns.push($(data).prop('times'));
+            columns.push($(data).prop('pontos'));
+            columns.push($(data).prop('vencidos'));
+            columns.push($(data).prop('empates'));
+            columns.push($(data).prop('derrotas'));
+            columns.push($(data).prop('golsFeitos'));
+            columns.push($(data).prop('golsSofridos'));
+            columns.push($(data).prop('saldodeGols'));
+
+
+            return columns
+        }
+        //criando as posições do campeonato.
+        function SortByProprierties(a, b) {
+
+            if ($(a).prop('position') == $(b).prop('position'))
+                return 0;
+
+            return $(a).prop('position') > $(b).prop('position') ? 1 : -1;
+        }
+
+        function ClearTable() {
+            $('#tableTabelaBRasileirao > tbody > tr').remove();
+        }
+
+        function ShowMessageSuccess(textMessage) {
+            ShowMessage('alert-success', textMessage);
+        }
+
+        function ShowMessageWarning(textMessage) {
+            ShowMessage('alert-warning', textMessage);
+        }
+
+        function ShowMessageError(textMessage) {
+            ShowMessage('alert-danger', textMessage);
+        }
+
+        function ShowMessage(alertType, textMessage) {
+
+            let divClass = 'alert ' + alertType;
+
+            $('#divAlert').removeClass();
+            $('#divAlert').addClass(divClass);
+            $('#divAlert').html(textMessage);
+            $('#divAlert').show().hide(10000);
+        }
+
+        //método para buscar de maneira async os dados do banco(acesso à controller, depois banco)
+        async function GetDataChampionship() {
+
+            let arrayResult = [];
+
+            arrayResult = await DoGetAsync('/Brasileirao/Index');
+
+            return arrayResult;
+
+        }
+
+        //método para buscar de maneira async os dados do banco para listar os confrontos(acesso à controller, depois banco)
+        async function GetTeams() {
+            let url = '/Brasileirao/getTeamsChampionship';
+            let result = await DoGetAsync(url);
+            /*console.log(result);*/
+            let options = [];
+             $(result).each(function (index) {
+
+               /*console.log($(item).prop('idTime'))*/
+                options.push(`<option value="${$(this).prop('idTime')}">${$(this).prop('nome')}</option>`);
+            })
+            return options;
+
+        }
+
+        async function DoGetAsync(url) {
+
+
+            var result = await fetch(url);
+
+            return result.json();
+
+            
+        }
+
+        async function DoPost(url, data) {
+
+
+            var resultFunction = function (resultPost) {
+                alert(resultPost);
+            };
+
+
+
+            $.post(url, data, resultFunction);
+        }
+        // metodo de salvar os valores para atribuir na minha controller.
+        async function SaveMatchResult() {
+            let host = $("#selectHost").val();
+            let hostGoals = $("#textHostGoals").val();
+            let foreign = $("#selectforeign").val();
+            let foreignGoals = $("#textForeignGoals").val();
+
+            var match = {
+                host : host,
+                hostGoals: hostGoals,
+                foreign: foreign,
+                foreignGoals : foreignGoals
+                
+            };
+            let url = '/Brasileirao/SaveMatchData';
+            await DoPost(url, match);
+
+        }
+
+    </script>
+
+    <body>
+        <div class="alert hide" role="alert" id="divAlert">
+
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-10">
+                    <span>Tabela Brasileirão 2021</span>
+                </div>
+                <div class="col-2">
+                    <div><button class="btn btn-success" data-toggle="modal" data-target="#modalInsertNewMatchResult" id="buttonInsertMatch">Inserir confronto</button></div>
+                </div>
+            </div>
+
+        </div>
+        <br />
+        <table id="tableTabelaBRasileirao" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Posição</th>
+                    <th>Equipe</th>
+                    <th>PTS</th>
+                    <th>V</th>
+                    <th>E</th>
+                    <th>D</th>
+                    <th>GP</th>
+                    <th>GC</th>
+                    <th>SG</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+
+        </table>
+
+
+        <div class="modal fade" id="modalInsertNewMatchResult" tabindex="-1" role="dialog" aria-labelledby="modalInsertNewMatchResultLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalInsertNewMatchResultLabel">Confronto</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="host">Time da casa</label>
+                                <select id="selectHost" class="form-control">
+                                    
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>&nbsp;</label>
+                                <input type="number" min="0" class="form-control" id="textHostGoals" />
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="selectforeign">Visitante</label>
+                                <select id="selectforeign" class="form-control">
+                                   
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>&nbsp;</label>
+                                <input type="number" min="0" class="form-control" id="textForeignGoals" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="buttonCloseModal">Fechar</button>
+                        <button type="button" class="btn btn-primary" id="buttonSaveModal">Salvar mudanças</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</div>

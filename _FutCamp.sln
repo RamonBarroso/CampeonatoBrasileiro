@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CampeonatoFut", "_FutCamp\CampeonatoFut.csproj", "{0484832F-90C9-47DE-9BA0-7D7216E94708}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0484832F-90C9-47DE-9BA0-7D7216E94708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0484832F-90C9-47DE-9BA0-7D7216E94708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0484832F-90C9-47DE-9BA0-7D7216E94708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0484832F-90C9-47DE-9BA0-7D7216E94708}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C4D582E5-B73C-458E-96E4-92381B42CB0B}
+	EndGlobalSection
+EndGlobal

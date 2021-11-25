@@ -1,0 +1,33 @@
+﻿@*@model IEnumerable<CampeonatoFut.Models.Tabela>
+@{
+    ViewBag.Title = "Index";
+}
+<h2>Produtos</h2>
+<p>
+    @Html.ActionLink("Incluir Novo Produto", "Create", "Produtos", new { @class = "btn btn-success" })
+</p>
+<table class="table">
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.Times)</th>
+        <th>@Html.DisplayNameFor(model => model.Pontos) </th>
+        <th>@Html.DisplayNameFor(model => model.Vencidos)</th>
+        <th>@Html.DisplayNameFor(model => model.Derrotas)</th>
+        <th>@Html.DisplayNameFor(model => model.GolsFeitos)</th>
+        <th>@Html.DisplayNameFor(model => model.GolsSofridos)</th>
+        <th>@Html.DisplayNameFor(model => model.SaldodeGols)</th>
+
+        <th></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+<tr>
+    <th>@Html.DisplayNameFor(model => model.Times)</th>
+    <th>@Html.DisplayNameFor(model => model.Pontos) </th>
+    <th>@Html.DisplayNameFor(model => model.Vencidos)</th>
+    <th>@Html.DisplayNameFor(model => model.Derrotas)</th>
+    <th>@Html.DisplayNameFor(model => model.GolsFeitos)</th>
+    <th>@Html.DisplayNameFor(model => model.GolsSofridos)</th>
+    <th>@Html.DisplayNameFor(model => model.SaldodeGols)</th>
+</tr>
+    }
+</table>*@
